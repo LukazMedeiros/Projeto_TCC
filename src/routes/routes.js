@@ -1,10 +1,10 @@
 const express = require('express');
-const { response } = require('express');
+
+// controllers
+const usuarioController = require('../controllers/usuarioController');
 
 const routes = express.Router();
 
-routes.get('/', (require,response)=>{
-    response.send(`hello world!`)
-})
+routes.get('/', usuarioController.create)
 
 module.exports = routes;
