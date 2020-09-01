@@ -15,26 +15,46 @@ module.exports = {
         
         await console.log(dados) //incluir query de cadastro no banco
         try {
-            return response.status(201).json({mensagem:`incidente cadastrado com sucesso!`})
+            return response.status(201).json({
+                mensagem:`incidente cadastrado com sucesso!`,
+                id:`id do incidente`
+            })
         } catch (error) {
             return response.status(400).json({mensagem:`${error}`})
         }
     },
-
+    
     async deletar(request,response){
         const dados = request.params;
-
+        
         // validações
         if ((dados.id === '')||(!dados.id)) {
             return response.status(400).json({mensagem:`ID do incidente não recebido`})
         }
-
+        
         await console.log(dados) //incluir query de conexão com o banco
         try {
-            return response.status(201).json({mensagem:`incidente excluído com sucesso!`})
+            return response.status(200).json({mensagem:`incidente excluído com sucesso!`})
         } catch (error) {
             return response.status(400).json({mensagem:`${error}`})
         }
     },
+    
+    async listar(request,response){
+        const dados = request.headers;
+        
+        // validações
+        if ((dados.usuario === '')||(!dados.usuario)) {
+            return response.status(400).json({mensagem:`ID do usuário não recebido`})
+        }
+        
+        const resposta = await console.log(dados) //incluir query de conexão com o banco
+        try {
+            return response.status(200).json(dados.usuario)
+        } catch (error) {
+            return response.status(400).json({mensagem:`${error}`})
+        }
+        
+    }
     
 }
