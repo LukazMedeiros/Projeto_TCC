@@ -11,7 +11,7 @@ module.exports = {
         if ((cpf==="")||(!cpf)) {
             return response.status(400).json({mensagem:`CPF não recebido`})
         }
-        await console.log(`recebido ${cpf} do usuario`) //colocar funçao de atualização para o banco de dados
+        await console.log(`recebido ${cpf} do usuario`) //colocar função de atualização para o banco de dados
         try {
             return response.status(200).json({mensagem:`cadastro atualizado com sucesso!`})
         } catch (error) {
