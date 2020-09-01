@@ -2,11 +2,17 @@ const express = require('express');
 
 // controllers
 const usuarioController = require('../controllers/usuarioController');
+const incidenteController = require('../controllers/incidenteController');
 
 const routes = express.Router();
 
-routes.put('/', usuarioController.atualizar);
-routes.post('/', usuarioController.criar);
-routes.delete('/', usuarioController.deletar);
+// usuario
+routes.put('/usuario', usuarioController.atualizar);
+routes.post('/usuario', usuarioController.criar);
+routes.delete('/usuario', usuarioController.deletar);
+
+// incidentes
+routes.post('/incidente', incidenteController.criar);
+routes.delete('/incidente/:id', incidenteController.deletar);
 
 module.exports = routes;
