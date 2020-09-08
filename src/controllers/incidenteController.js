@@ -1,10 +1,11 @@
+const conn = require('../model/conexao');
 
 module.exports = {
     
     async criar(request,response){
         const dados = request.body;
         
-        // validações
+        // validações de dados recebidos
         if ((dados.titulo === '')||(!dados.titulo)) {
             return response.status(400).json({mensagem:`título não recebido`})
         }else if((dados.descricao === '')||(!dados.descricao)) {
@@ -13,11 +14,22 @@ module.exports = {
             return response.status(400).json({mensagem:`solicitante não recebido`})
         }
         
+        // validação de usuario
+        try {
+            const [resposta] = await conn('usuarios').select('ra').where('ra',dados.solicitante)
+            if (resposta.ra !== dados.solicitante) {
+                return response.status(400).json({mensagem:`usuário incorreto`})
+            }
+        } catch (error) {
+            return response.status(400).json({mensagem:`usuario nao encontrado ${error}`})
+        }
+        
         await console.log(dados) //incluir query de cadastro no banco
         try {
+            const resposta = await conn('incidentes').insert(dados)
             return response.status(201).json({
                 mensagem:`incidente cadastrado com sucesso!`,
-                id:`id do incidente`
+                id:`${resposta}`
             })
         } catch (error) {
             return response.status(400).json({mensagem:`${error}`})
@@ -26,14 +38,27 @@ module.exports = {
     
     async deletar(request,response){
         const dados = request.params;
+        const usuario = request.headers.usuario;
         
-        // validações
+        // validações dos dados
         if ((dados.id === '')||(!dados.id)) {
             return response.status(400).json({mensagem:`ID do incidente não recebido`})
+        }else if ((usuario === '')||(!usuario)) {
+            return response.status(400).json({mensagem:`Usuário não recebido`})
+        }
+
+        try {
+            const [resposta] = await conn('incidentes').select('solicitante').where('solicitante',usuario)
+            if (resposta.solicitante !== usuario) {
+                return response.status(400).json({mensagem:`usuário incorreto`})
+            }
+        } catch (error) {
+            
         }
         
-        await console.log(dados) //incluir query de conexão com o banco
+        
         try {
+            await conn('incidentes').delete('*').where('id',dados.id)
             return response.status(200).json({mensagem:`incidente excluído com sucesso!`})
         } catch (error) {
             return response.status(400).json({mensagem:`${error}`})
@@ -48,9 +73,9 @@ module.exports = {
             return response.status(400).json({mensagem:`ID do usuário não recebido`})
         }
         
-        const resposta = await console.log(dados) //incluir query de conexão com o banco
         try {
-            return response.status(200).json(dados.usuario)
+            const resposta = await conn('incidentes').select('*').where('solicitante',dados.usuario)
+            return response.status(200).json(resposta)
         } catch (error) {
             return response.status(400).json({mensagem:`${error}`})
         }
