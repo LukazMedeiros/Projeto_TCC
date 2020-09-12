@@ -3,30 +3,30 @@ const conn = require('../model/conexao');
 module.exports = {
     
     async criar(request,response){
-        const dados = request.body;
+        const solicitante = request.headers.usuario;
+        const {titulo, descricao} = request.body;
         
         // validações de dados recebidos
-        if ((dados.titulo === '')||(!dados.titulo)) {
+        if ((titulo === '')||(!titulo)) {
             return response.status(400).json({mensagem:`título não recebido`})
-        }else if((dados.descricao === '')||(!dados.descricao)) {
+        }else if((descricao === '')||(!descricao)) {
             return response.status(400).json({mensagem:`descrição não recebido`})
-        } else if ((dados.solicitante === '')||(!dados.solicitante)) {
+        } else if ((solicitante === '')||(!solicitante)) {
             return response.status(400).json({mensagem:`solicitante não recebido`})
         }
         
         // validação de usuario
         try {
-            const [resposta] = await conn('usuarios').select('ra').where('ra',dados.solicitante)
-            if (resposta.ra !== dados.solicitante) {
+            const [resposta] = await conn('usuarios').select('ra').where('ra',solicitante)
+            if (resposta.ra !== solicitante) {
                 return response.status(400).json({mensagem:`usuário incorreto`})
             }
         } catch (error) {
             return response.status(400).json({mensagem:`usuario nao encontrado ${error}`})
-        }
+        }        
         
-        await console.log(dados) //incluir query de cadastro no banco
         try {
-            const resposta = await conn('incidentes').insert(dados)
+            const resposta = await conn('incidentes').insert({titulo, descricao, solicitante, "resolucao":"", "status":"aberto" })
             return response.status(201).json({
                 mensagem:`incidente cadastrado com sucesso!`,
                 id:`${resposta}`
@@ -46,14 +46,14 @@ module.exports = {
         }else if ((usuario === '')||(!usuario)) {
             return response.status(400).json({mensagem:`Usuário não recebido`})
         }
-
+        
         try {
             const [resposta] = await conn('incidentes').select('solicitante').where('solicitante',usuario)
             if (resposta.solicitante !== usuario) {
                 return response.status(400).json({mensagem:`usuário incorreto`})
             }
         } catch (error) {
-            
+            return response.status(400).json({mensagem:`${error}`})
         }
         
         
@@ -66,20 +66,53 @@ module.exports = {
     },
     
     async listar(request,response){
-        const dados = request.headers;
+        const usuario= request.headers.usuario;
         
         // validações
-        if ((dados.usuario === '')||(!dados.usuario)) {
+        if ((usuario === '')||(!usuario)) {
             return response.status(400).json({mensagem:`ID do usuário não recebido`})
         }
         
         try {
-            const resposta = await conn('incidentes').select('*').where('solicitante',dados.usuario)
+            const resposta = await conn('incidentes').select('*').where('solicitante',usuario)
             return response.status(200).json(resposta)
         } catch (error) {
             return response.status(400).json({mensagem:`${error}`})
         }
         
+    },
+    
+    async encerrar(request,response){
+        const {id} = request.params;
+        const dados = request.body;
+        
+        // validações
+        if((dados.resolucao === "")||(!dados.resolucao)){
+            return response.status(400).json({mensagem:`resolução não recebida`})
+        }
+        
+        if((id === "")||(!id)){
+            return response.status(400).json({mensagem:`ID não recebida`})
+        }
+        
+        
+        try {
+            const [resposta] = await conn('incidentes').select('*').where('id',id)
+            if (resposta === undefined) {
+                return response.status(400).json({mensagem:`O incidente informado não existe`})
+            }else if (resposta.status === "solucionado") {
+                return response.status(400).json({mensagem:`O incidente informado já está solucionado`})
+            }
+        } catch (error) {
+            return response.status(400).json({mensagem:`${error}`})
+        }
+        
+        try {
+            await conn('incidentes').update({'resolucao':dados.resolucao, "status":"solucionado"}).where('id',id)
+            return response.status(200).json({mensagem:`incidente encerrado com sucesso!`})
+        } catch (error) {
+            return response.status(400).json({mensagem:`${error}`})
+        }
     }
     
 }
