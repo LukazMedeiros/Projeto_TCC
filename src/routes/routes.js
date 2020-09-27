@@ -3,9 +3,12 @@ const express = require('express');
 // controllers
 const usuarioController = require('../controllers/usuarioController');
 const incidenteController = require('../controllers/incidenteController');
+const sessaoController = require('../controllers/sessaoController');
 
 const routes = express.Router();
 
+// sessão
+routes.post('/sessao', sessaoController.login);
 // usuario
 routes.put('/usuario', usuarioController.atualizar);
 routes.post('/usuario', usuarioController.criar);
