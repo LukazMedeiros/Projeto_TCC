@@ -3,8 +3,10 @@ const conn = require('../model/conexao');
 module.exports = {
     
     async criar(request,response){
+        const hoje = new Date();
         const solicitante = request.headers.usuario;
         const {titulo, descricao} = request.body;
+        const data_abertura = hoje.toGMTString();
         
         // validações de dados recebidos
         if ((titulo === '')||(!titulo)) {
@@ -26,7 +28,7 @@ module.exports = {
         }        
         
         try {
-            const resposta = await conn('incidentes').insert({titulo, descricao, solicitante, "resolucao":"", "status":"aberto" })
+            const resposta = await conn('incidentes').insert({titulo, descricao, solicitante, "data_abertura":data_abertura, "resolucao":"", "status":"aberto" })
             return response.status(201).json({
                 mensagem:`incidente cadastrado com sucesso!`,
                 id:`${resposta}`
@@ -83,8 +85,10 @@ module.exports = {
     },
     
     async encerrar(request,response){
+        const hoje = new Date();
         const {id} = request.params;
         const dados = request.body;
+        const data_encerramento = hoje.toGMTString();
         
         // validações
         if((dados.resolucao === "")||(!dados.resolucao)){
@@ -108,7 +112,7 @@ module.exports = {
         }
         
         try {
-            await conn('incidentes').update({'resolucao':dados.resolucao, "status":"solucionado"}).where('id',id)
+            await conn('incidentes').update({'resolucao':dados.resolucao, "data_encerramento":data_encerramento, "status":"solucionado"}).where('id',id)
             return response.status(200).json({mensagem:`incidente encerrado com sucesso!`})
         } catch (error) {
             return response.status(400).json({mensagem:`${error}`})
