@@ -15,6 +15,7 @@ routes.delete('/usuario', usuarioController.deletar);
 routes.post('/incidente', incidenteController.criar);
 routes.delete('/incidente/:id', incidenteController.deletar);
 routes.get('/incidente/', incidenteController.listar);
+routes.get('/incidente/:status', incidenteController.listarStatus);
 routes.put('/incidente/:id', incidenteController.encerrar);
 
 module.exports = routes;
