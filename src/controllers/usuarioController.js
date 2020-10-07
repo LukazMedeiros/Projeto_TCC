@@ -34,32 +34,27 @@ module.exports = {
         }
     },
     
-    async criar(request,response){
-        const {
-            cpf,
-            nome,
-            ra,
-            senha
-        } = request.body;
+    criar(request,response){
+        const dados = request.body;
         
-        // validaçoes de dados
-        if ((cpf==="")||(!cpf)) {
-            return response.status(400).json({mensagem:`CPF não recebido`})
-        }else if ((nome === "")||(!nome)) {
-            return response.status(400).json({mensagem:`nome não recebido`})
-        } else if((ra === "")||(!ra)){
-            return response.status(400).json({mensagem:`RA não recebido`})
-        }else if((senha === "")||(!senha)){
-            return response.status(400).json({mensagem:`Senha não recebido`})
-        }
-        
-        // inserindo usuario no banco
-        try {
-            const usuario = await conn('usuarios').insert({cpf,nome,ra,senha})
-            return response.status(200).json({mensagem:`usuário cadastrado com sucesso! ID do usuário ${usuario}`})
-        } catch (error) {
-            return response.status(400).json({mensagem:`${error}`})
-        }
+        dados.forEach(async usuario => {
+            if ((usuario.cpf==="")||(!usuario.cpf)) {
+                return response.status(400).json({mensagem:`CPF não recebido`})
+            }else if ((usuario.nome === "")||(!usuario.nome)) {
+                return response.status(400).json({mensagem:`nome não recebido`})
+            } else if((usuario.ra === "")||(!usuario.ra)){
+                return response.status(400).json({mensagem:`RA não recebido`})
+            }else if((usuario.senha === "")||(!usuario.senha)){
+                return response.status(400).json({mensagem:`Senha não recebido`})
+            }
+            
+            try {
+                await conn('usuarios').insert({"cpf":usuario.cpf,"nome":usuario.nome,"ra":usuario.ra,"senha":usuario.senha})
+            } catch (error) {
+                return response.status(400).json({mensagem:`${error}`})
+            }
+            return response.status(200).json({mensagem:`usuários cadastrados com sucesso!`})
+        })
     },
     
     async deletar(request,response){
