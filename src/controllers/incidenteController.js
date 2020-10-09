@@ -104,12 +104,14 @@ module.exports = {
     
     async encerrar(request,response){
         const hoje = new Date();
-        const {id} = request.params;
-        const dados = request.body;
+        const {id, resolucao} = request.body;
         const data_encerramento = hoje.toGMTString();
+
+        console.log(id)
+        console.log(resolucao)
         
         // validações
-        if((dados.resolucao === "")||(!dados.resolucao)){
+        if((resolucao === "")||(!resolucao)){
             return response.status(400).json({mensagem:`resolução não recebida`})
         }
         
@@ -130,7 +132,7 @@ module.exports = {
         }
         
         try {
-            await conn('incidentes').update({'resolucao':dados.resolucao, "data_encerramento":data_encerramento, "status":"solucionado"}).where('id',id)
+            await conn('incidentes').update({'resolucao':resolucao, "data_encerramento":data_encerramento, "status":"solucionado"}).where('id',id)
             return response.status(200).json({mensagem:`incidente encerrado com sucesso!`})
         } catch (error) {
             return response.status(400).json({mensagem:`${error}`})
