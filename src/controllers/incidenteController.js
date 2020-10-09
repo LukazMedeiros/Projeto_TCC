@@ -106,9 +106,6 @@ module.exports = {
         const hoje = new Date();
         const {id, resolucao} = request.body;
         const data_encerramento = hoje.toGMTString();
-
-        console.log(id)
-        console.log(resolucao)
         
         // validações
         if((resolucao === "")||(!resolucao)){
