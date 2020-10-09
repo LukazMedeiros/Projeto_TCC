@@ -83,9 +83,10 @@ module.exports = {
         }
         
     },
-
+    
     async listarStatus(request,response){
         const status= request.params.status;
+        const usuario= request.params.usuario;
         
         // validações
         if ((status === '')||(!status)) {
@@ -93,7 +94,7 @@ module.exports = {
         }
         
         try {
-            const resposta = await conn('incidentes').select('*').where('status',status)
+            const resposta = await conn('incidentes').select('*').where({'status':status, 'solicitante':usuario})
             return response.status(200).json(resposta)
         } catch (error) {
             return response.status(400).json({mensagem:`${error}`})
@@ -135,5 +136,4 @@ module.exports = {
             return response.status(400).json({mensagem:`${error}`})
         }
     }
-    
 }
