@@ -10,11 +10,11 @@ module.exports = {
         
         // validações de dados recebidos
         if ((titulo === '')||(!titulo)) {
-            return response.status(400).json({mensagem:`título não recebido`})
+            return response.json({mensagem:`título não recebido`})
         }else if((descricao === '')||(!descricao)) {
-            return response.status(400).json({mensagem:`descrição não recebido`})
+            return response.json({mensagem:`descrição não recebido`})
         } else if ((solicitante === '')||(!solicitante)) {
-            return response.status(400).json({mensagem:`solicitante não recebido`})
+            return response.json({mensagem:`solicitante não recebido`})
         }
         
         // validação de usuario

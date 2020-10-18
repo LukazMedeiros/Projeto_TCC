@@ -18,7 +18,9 @@ routes.delete('/usuario', usuarioController.deletar);
 
 // administrador
 routes.get('/adm', admController.listarAdm);
+routes.get('/ticket/:id', admController.buscar);
 routes.get('/adm/:status', admController.listarStatus);
+routes.put('/adm/:id', admController.encerrar);
 
 // incidentes
 routes.post('/incidente', incidenteController.criar);
